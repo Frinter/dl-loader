@@ -1,0 +1,28 @@
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <windows.h>
+
+#include "module.hh"
+
+
+typedef int (*entry_function)();
+
+
+int main(int argc, char **argv)
+{
+    if (argc < 3)
+        return 0;
+
+    const char *path = argv[1];
+    const char *entry_name = argv[2];
+
+    SharedLibrary *library = SharedLibrary::create(path);
+    Module *module = new Module(library);
+
+    module->load();
+
+    entry_function entry = (entry_function)module->loadFunction(entry_name);
+
+    return entry();
+}
