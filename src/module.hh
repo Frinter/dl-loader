@@ -1,8 +1,9 @@
 #pragma once
 
 #include "sharedlibrary.hh"
+#include "modulefunctionloader.hh"
 
-class Module
+class Module : public ModuleFunctionLoader
 {
 private:
     typedef void  (*onModuleLoad_function)(void *);

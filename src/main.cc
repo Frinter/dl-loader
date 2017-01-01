@@ -1,10 +1,9 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include <windows.h>
 
-#include "module.hh"
-
+#include "modulefunctionloader.hh"
+#include "modulerepository.hh"
 
 typedef int (*entry_function)();
 
@@ -17,12 +16,11 @@ int main(int argc, char **argv)
     const char *path = argv[1];
     const char *entry_name = argv[2];
 
-    SharedLibrary *library = SharedLibrary::create(path);
-    Module *module = new Module(library);
+    ModuleRepository repository;
 
-    module->load();
+    ModuleFunctionLoader *module = repository.getModule(path);
 
-    entry_function entry = (entry_function)module->loadFunction(entry_name);
+    entry_function entry = (entry_function)(module)->loadFunction(entry_name);
 
     return entry();
 }
