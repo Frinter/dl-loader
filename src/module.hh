@@ -2,10 +2,6 @@
 
 #include "sharedlibrary.hh"
 
-#ifndef NULL
-# define NULL 0
-#endif
-
 class Module
 {
 private:
@@ -15,7 +11,8 @@ private:
 public:
     Module(SharedLibrary *library);
 
-    void load(void *initialData = NULL);
+    void load();
+    void load(void *initialData);
     void unload();
     void reload();
 

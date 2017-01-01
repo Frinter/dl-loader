@@ -1,8 +1,15 @@
+#include <stdlib.h>
+
 #include "module.hh"
 
 Module::Module(SharedLibrary *library)
     : _library(library)
 {
+}
+
+void Module::load()
+{
+    load(NULL);
 }
 
 void Module::load(void *initialData)
@@ -12,8 +19,7 @@ void Module::load(void *initialData)
     _onModuleLoad = (onModuleLoad_function)loadFunction("onModuleLoad");
     _exportModuleData = (exportModuleData_function)loadFunction("exportModuleData");
 
-    if (_onModuleLoad != NULL)
-        _onModuleLoad(initialData);
+    _onModuleLoad(initialData);
 }
 
 void *Module::getExportedData()
