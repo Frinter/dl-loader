@@ -1,5 +1,7 @@
-#include "modulerepository.hh"
+#include "module.hh"
 #include "sharedlibraryrepository.hh"
+
+#include "modulerepository.hh"
 
 ModuleRepository::ModuleRepository(SharedLibraryRepository *sharedLibraryRepository)
     : _sharedLibraryRepository(sharedLibraryRepository)
@@ -8,10 +10,10 @@ ModuleRepository::ModuleRepository(SharedLibraryRepository *sharedLibraryReposit
 
 ModuleFunctionLoader *ModuleRepository::getModule(const std::string &moduleName)
 {
-    ModuleInfo *info = (ModuleInfo *)_modules.get(moduleName);
+    Module *module = (Module *)_modules.get(moduleName);
 
-    if (info != NULL)
-        return (ModuleFunctionLoader *)info->module;
+    if (module != NULL)
+        return (ModuleFunctionLoader *)module;
 
     SharedLibrary *library = _sharedLibraryRepository->get(moduleName);
     if (library == NULL)
@@ -20,14 +22,10 @@ ModuleFunctionLoader *ModuleRepository::getModule(const std::string &moduleName)
         _sharedLibraryRepository->registerLibrary(moduleName, library);
     }
 
-    Module *module = new Module(library);
+    module = new Module(library);
     module->load();
 
-    info = new ModuleInfo();
-    info->name = moduleName;
-    info->module = module;
-
-    _modules.save(moduleName, (void *)info);
+    _modules.save(moduleName, (void *)module);
 
     return (ModuleFunctionLoader *)module;
 }

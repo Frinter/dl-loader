@@ -2,18 +2,11 @@
 
 #include <string>
 
-#include "module.hh"
 #include "sharedlibraryrepository.hh"
 #include "util/repository.hh"
 
 class ModuleRepository
 {
-private:
-    typedef struct {
-        std::string name;
-        Module *module;
-    } ModuleInfo;
-
 public:
     ModuleRepository(SharedLibraryRepository *sharedLibraryRepository);
 
