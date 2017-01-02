@@ -3,7 +3,7 @@
 
 #include "sharedlibraryrepository.hh"
 
-void SharedLibraryRepository::registerLibrary(const std::string &path, SharedLibrary *library)
+void SharedLibraryRepository::save(const std::string &path, SharedLibrary *library)
 {
     if (_registry.get(path) != NULL)
     {
@@ -15,7 +15,7 @@ void SharedLibraryRepository::registerLibrary(const std::string &path, SharedLib
     _registry.save(path, (void *)library);
 }
 
-void SharedLibraryRepository::unregisterLibrary(const std::string &path)
+void SharedLibraryRepository::remove(const std::string &path)
 {
     _registry.remove(path);
 }

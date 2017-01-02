@@ -27,7 +27,7 @@ int main(int argc, char **argv)
         if (library == NULL)
         {
             library = SharedLibrary::create(path);
-            sharedLibraryRepository.registerLibrary(path, library);
+            sharedLibraryRepository.save(path, library);
         }
 
         module = new Module(library);

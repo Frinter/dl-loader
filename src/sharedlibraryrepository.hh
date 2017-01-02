@@ -9,8 +9,8 @@
 class SharedLibraryRepository
 {
 public:
-    void registerLibrary(const std::string &path, SharedLibrary *library);
-    void unregisterLibrary(const std::string &path);
+    void save(const std::string &path, SharedLibrary *library);
+    void remove(const std::string &path);
 
     SharedLibrary *get(const std::string &path);
 
