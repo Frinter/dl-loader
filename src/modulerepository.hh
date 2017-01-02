@@ -1,10 +1,10 @@
 #pragma once
 
 #include <string>
-#include <vector>
 
 #include "module.hh"
 #include "sharedlibraryrepository.hh"
+#include "util/repository.hh"
 
 class ModuleRepository
 {
@@ -17,12 +17,9 @@ private:
 public:
     ModuleRepository(SharedLibraryRepository *sharedLibraryRepository);
 
-    ModuleFunctionLoader *getModule(const char *moduleName);
+    ModuleFunctionLoader *getModule(const std::string &moduleName);
 
 private:
-    ModuleInfo *_findModule(const char *moduleName);
-
-private:
-    std::vector<ModuleInfo *> _modules;
+    Repository _modules;
     SharedLibraryRepository *_sharedLibraryRepository;
 };

@@ -6,9 +6,9 @@ ModuleRepository::ModuleRepository(SharedLibraryRepository *sharedLibraryReposit
 {
 }
 
-ModuleFunctionLoader *ModuleRepository::getModule(const char *moduleName)
+ModuleFunctionLoader *ModuleRepository::getModule(const std::string &moduleName)
 {
-    ModuleInfo *info = _findModule(moduleName);
+    ModuleInfo *info = (ModuleInfo *)_modules.get(moduleName);
 
     if (info != NULL)
         return (ModuleFunctionLoader *)info->module;
@@ -16,7 +16,7 @@ ModuleFunctionLoader *ModuleRepository::getModule(const char *moduleName)
     SharedLibrary *library = _sharedLibraryRepository->get(moduleName);
     if (library == NULL)
     {
-        library = SharedLibrary::create(moduleName);
+        library = SharedLibrary::create(moduleName.c_str());
         _sharedLibraryRepository->registerLibrary(moduleName, library);
     }
 
@@ -27,18 +27,7 @@ ModuleFunctionLoader *ModuleRepository::getModule(const char *moduleName)
     info->name = moduleName;
     info->module = module;
 
-    _modules.push_back(info);
+    _modules.save(moduleName, (void *)info);
 
     return (ModuleFunctionLoader *)module;
-}
-
-ModuleRepository::ModuleInfo *ModuleRepository::_findModule(const char *moduleName)
-{
-    for (int i = 0; i < _modules.size(); ++i)
-    {
-        if (_modules[i]->name == moduleName)
-            return _modules[i];
-    }
-
-    return NULL;
 }

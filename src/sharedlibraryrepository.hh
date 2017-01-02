@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 
+#include "util/repository.hh"
 #include "sharedlibrary.hh"
 
 class SharedLibraryRepository
@@ -14,5 +15,5 @@ public:
     SharedLibrary *get(const std::string &path);
 
 private:
-    std::map<std::string, SharedLibrary *> _registry;
+    Repository _registry;
 };

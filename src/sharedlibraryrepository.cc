@@ -5,28 +5,22 @@
 
 void SharedLibraryRepository::registerLibrary(const std::string &path, SharedLibrary *library)
 {
-    if (_registry.find(path) != _registry.end())
+    if (_registry.get(path) != NULL)
     {
         std::string message = "Duplicate entry for shared library: ";
         message += path;
         throw std::logic_error(message);
     }
 
-    _registry[path] = library;
+    _registry.save(path, (void *)library);
 }
 
 void SharedLibraryRepository::unregisterLibrary(const std::string &path)
 {
-    std::map<std::string, SharedLibrary *>::iterator location = _registry.find(path);
-
-    if (location != _registry.end())
-        _registry.erase(location);
+    _registry.remove(path);
 }
 
 SharedLibrary *SharedLibraryRepository::get(const std::string &path)
 {
-    if (_registry.find(path) == _registry.end())
-        return NULL;
-
-    return _registry[path];
+    return (SharedLibrary *)_registry.get(path);
 }
