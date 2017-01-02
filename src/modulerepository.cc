@@ -1,31 +1,25 @@
 #include "module.hh"
-#include "sharedlibraryrepository.hh"
 
 #include "modulerepository.hh"
 
-ModuleRepository::ModuleRepository(SharedLibraryRepository *sharedLibraryRepository)
-    : _sharedLibraryRepository(sharedLibraryRepository)
+void ModuleRepository::save(const std::string &key, Module *module)
 {
-}
-
-ModuleFunctionLoader *ModuleRepository::getModule(const std::string &moduleName)
-{
-    Module *module = (Module *)_modules.get(moduleName);
-
-    if (module != NULL)
-        return (ModuleFunctionLoader *)module;
-
-    SharedLibrary *library = _sharedLibraryRepository->get(moduleName);
-    if (library == NULL)
+    if (_modules.get(key) != NULL)
     {
-        library = SharedLibrary::create(moduleName.c_str());
-        _sharedLibraryRepository->registerLibrary(moduleName, library);
+        std::string message = "Attempting to add duplicate entry for module: ";
+        message += key;
+        throw std::logic_error(message);
     }
 
-    module = new Module(library);
-    module->load();
+    _modules.save(key, (void *)module);
+}
 
-    _modules.save(moduleName, (void *)module);
+void ModuleRepository::remove(const std::string &key)
+{
+    _modules.remove(key);
+}
 
-    return (ModuleFunctionLoader *)module;
+Module *ModuleRepository::get(const std::string &key)
+{
+    return (Module *)_modules.get(key);
 }

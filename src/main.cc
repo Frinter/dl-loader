@@ -4,6 +4,7 @@
 
 #include "modulefunctionloader.hh"
 #include "modulerepository.hh"
+#include "sharedlibraryrepository.hh"
 
 typedef int (*entry_function)();
 
@@ -17,11 +18,26 @@ int main(int argc, char **argv)
     const char *entry_name = argv[2];
 
     SharedLibraryRepository sharedLibraryRepository;
-    ModuleRepository moduleRepository = ModuleRepository(&sharedLibraryRepository);
+    ModuleRepository moduleRepository;
 
-    ModuleFunctionLoader *module = moduleRepository.getModule(path);
+    Module *module = moduleRepository.get(path);
+    if (module == NULL)
+    {
+        SharedLibrary *library = sharedLibraryRepository.get(path);
+        if (library == NULL)
+        {
+            library = SharedLibrary::create(path);
+            sharedLibraryRepository.registerLibrary(path, library);
+        }
 
-    entry_function entry = (entry_function)(module)->loadFunction(entry_name);
+        module = new Module(library);
+        module->load();
+
+        moduleRepository.save(path, module);
+    }
+
+    ModuleFunctionLoader *moduleInterface = (ModuleFunctionLoader *)module;
+    entry_function entry = (entry_function)moduleInterface->loadFunction(entry_name);
 
     return entry();
 }

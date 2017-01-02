@@ -2,17 +2,17 @@
 
 #include <string>
 
-#include "sharedlibraryrepository.hh"
+#include "module.hh"
 #include "util/repository.hh"
 
 class ModuleRepository
 {
 public:
-    ModuleRepository(SharedLibraryRepository *sharedLibraryRepository);
+    void save(const std::string &key, Module *module);
+    void remove(const std::string &key);
 
-    ModuleFunctionLoader *getModule(const std::string &moduleName);
+    Module *get(const std::string &key);
 
 private:
     Repository _modules;
-    SharedLibraryRepository *_sharedLibraryRepository;
 };
