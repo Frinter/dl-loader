@@ -17,9 +17,9 @@ int main(int argc, char **argv)
     const char *entry_name = argv[2];
 
     SharedLibraryRepository sharedLibraryRepository;
-    ModuleRepository repository = ModuleRepository(&sharedLibraryRepository);
+    ModuleRepository moduleRepository = ModuleRepository(&sharedLibraryRepository);
 
-    ModuleFunctionLoader *module = repository.getModule(path);
+    ModuleFunctionLoader *module = moduleRepository.getModule(path);
 
     entry_function entry = (entry_function)(module)->loadFunction(entry_name);
 
