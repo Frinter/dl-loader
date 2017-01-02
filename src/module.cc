@@ -39,6 +39,14 @@ void Module::reload()
     load(data);
 }
 
+void Module::reload(SharedLibrary *newLibrary)
+{
+    void *data = getExportedData();
+    unload();
+    _library = newLibrary;
+    load(data);
+}
+
 void *Module::loadFunction(const char *functionName)
 {
     return _library->loadFunction(functionName);

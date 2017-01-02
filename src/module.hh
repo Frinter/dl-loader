@@ -16,6 +16,7 @@ public:
     void load(void *initialData);
     void unload();
     void reload();
+    void reload(SharedLibrary *newLibrary);
 
     void *loadFunction(const char *functionName);
 
