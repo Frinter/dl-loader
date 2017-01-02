@@ -1,6 +1,8 @@
 #include "modulerepository.hh"
+#include "sharedlibraryrepository.hh"
 
-ModuleRepository::ModuleRepository()
+ModuleRepository::ModuleRepository(SharedLibraryRepository *sharedLibraryRepository)
+    : _sharedLibraryRepository(sharedLibraryRepository)
 {
 }
 
@@ -11,7 +13,12 @@ ModuleFunctionLoader *ModuleRepository::getModule(const char *moduleName)
     if (info != NULL)
         return (ModuleFunctionLoader *)info->module;
 
-    SharedLibrary *library = SharedLibrary::create(moduleName);
+    SharedLibrary *library = _sharedLibraryRepository->get(moduleName);
+    if (library == NULL)
+    {
+        library = SharedLibrary::create(moduleName);
+        _sharedLibraryRepository->registerLibrary(moduleName, library);
+    }
 
     Module *module = new Module(library);
     module->load();

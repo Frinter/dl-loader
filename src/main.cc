@@ -16,7 +16,8 @@ int main(int argc, char **argv)
     const char *path = argv[1];
     const char *entry_name = argv[2];
 
-    ModuleRepository repository;
+    SharedLibraryRepository sharedLibraryRepository;
+    ModuleRepository repository = ModuleRepository(&sharedLibraryRepository);
 
     ModuleFunctionLoader *module = repository.getModule(path);
 

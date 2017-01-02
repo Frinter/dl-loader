@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "module.hh"
-#include "sharedlibrary.hh"
+#include "sharedlibraryrepository.hh"
 
 class ModuleRepository
 {
@@ -15,7 +15,7 @@ private:
     } ModuleInfo;
 
 public:
-    ModuleRepository();
+    ModuleRepository(SharedLibraryRepository *sharedLibraryRepository);
 
     ModuleFunctionLoader *getModule(const char *moduleName);
 
@@ -24,4 +24,5 @@ private:
 
 private:
     std::vector<ModuleInfo *> _modules;
+    SharedLibraryRepository *_sharedLibraryRepository;
 };
