@@ -2,15 +2,16 @@
 
 #include "sharedlibrary.hh"
 #include "modulefunctionloader.hh"
+#include "moduleinterfacerepository.hh"
 
 class Module : public ModuleFunctionLoader
 {
 private:
-    typedef void  (*onModuleLoad_function)(void *);
+    typedef void  (*onModuleLoad_function)(void *, ModuleInterfaceRepository *);
     typedef void *(*exportModuleData_function)();
 
 public:
-    Module(SharedLibrary *library);
+    Module(ModuleInterfaceRepository *modules, SharedLibrary *library);
 
     void load();
     void load(void *initialData);
@@ -23,6 +24,8 @@ public:
     void *getExportedData();
 
 private:
+    ModuleInterfaceRepository *_modules;
+
     SharedLibrary *_library;
     onModuleLoad_function _onModuleLoad;
     exportModuleData_function _exportModuleData;

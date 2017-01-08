@@ -2,8 +2,8 @@
 
 #include "module.hh"
 
-Module::Module(SharedLibrary *library)
-    : _library(library)
+Module::Module(ModuleInterfaceRepository *modules, SharedLibrary *library)
+    : _modules(modules), _library(library)
 {
 }
 
@@ -19,7 +19,7 @@ void Module::load(void *initialData)
     _onModuleLoad = (onModuleLoad_function)loadFunction("onModuleLoad");
     _exportModuleData = (exportModuleData_function)loadFunction("exportModuleData");
 
-    _onModuleLoad(initialData);
+    _onModuleLoad(initialData, _modules);
 }
 
 void *Module::getExportedData()
