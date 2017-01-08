@@ -33,7 +33,7 @@ namespace Windows
         {
             _handle = LoadLibrary(_path);
             if (_handle == NULL)
-                throw std::runtime_error(getError(GetLastError()));
+                throw std::runtime_error(std::string(_path) + ": " + getError(GetLastError()));
         }
 
         void unload()
