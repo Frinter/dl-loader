@@ -11,9 +11,9 @@ extern "C" {
         return NULL;
     }
 
-    int getValue()
+    void *getValue(void *arguments)
     {
         std::cout << "in dependency" << std::endl;
-        return 10;
+        return new int(10);
     }
 }

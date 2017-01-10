@@ -5,7 +5,6 @@
 #include "modulefunctionloader.hh"
 #include "modulerepository.hh"
 #include "sharedlibraryrepository.hh"
-#include "moduleinterfacerepositoryimplementation.hh"
 
 typedef int (*entry_function)();
 
@@ -54,18 +53,18 @@ int main(int argc, char **argv)
     Module *module = getOrOpenModule(path, &moduleRepository, &sharedLibraryRepository);
 
     ModuleFunctionLoader *moduleInterface = (ModuleFunctionLoader *)module;
-    entry_function entry = (entry_function)moduleInterface->loadFunction(entry_name);
-    entry();
+    Callable *entry = moduleInterface->loadFunction(entry_name);
+    entry->call(NULL);
 
     module->reload();
     moduleInterface = (ModuleFunctionLoader *)module;
-    entry = (entry_function)moduleInterface->loadFunction(entry_name);
-    entry();
+    entry = moduleInterface->loadFunction(entry_name);
+    entry->call(NULL);
 
     module->reload(replaceLibrary);
     sharedLibraryRepository.remove(path);
-    entry = (entry_function)moduleInterface->loadFunction(entry_name);
-    entry();
+    entry = moduleInterface->loadFunction(entry_name);
+    entry->call(NULL);
 
     return 0;
 }

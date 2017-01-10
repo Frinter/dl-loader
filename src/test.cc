@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "loadparameters.hh"
 #include "modulefunctionloader.hh"
 #include "moduleinterfacerepository.hh"
 
@@ -11,25 +12,22 @@ typedef struct
     int data;
 } ExportData;
 
-typedef int (*getValue_function)();
-
-getValue_function getValue;
+Callable *getValue;
 
 extern "C" {
-    typedef void (*foo_function)();
-
     const char *getModuleName()
     {
         return "Test Module";
     }
 
-    void onModuleLoad(void *initialData, ModuleInterfaceRepository *modules)
+    void onModuleLoad(void *params)
     {
-        ModuleFunctionLoader *dependency = modules->getModule("bin/testDependency.dll");
+        LoadParameters *parameters = (LoadParameters *)params;
+        ModuleFunctionLoader *dependency = parameters->modules->getModuleInterface("bin/testDependency.dll");
 
-        if (initialData != NULL)
+        if (parameters->initialData != NULL)
         {
-            ExportData *import = (ExportData *)initialData;
+            ExportData *import = (ExportData *)parameters->initialData;
             data = import->data;
         }
         else
@@ -42,13 +40,15 @@ extern "C" {
             else
             {
                 std::cout << "Success loading dependency" << std::endl;
-                getValue = (getValue_function)dependency->loadFunction("getValue");
-                data = getValue();
+                getValue = dependency->loadFunction("getValue");
+                int *value = (int*)getValue->call(NULL);
+                data = *value;
+                delete value;
             }
         }
     }
 
-    void *exportModuleData()
+    void *exportModuleData(void *params)
     {
         ExportData *exportData = (ExportData*)malloc(sizeof(ExportData));
         exportData->data = data;
@@ -60,7 +60,7 @@ extern "C" {
         data = x;
     }
 
-    void foo()
+    void *foo(void *params)
     {
         std::cout << "hello from lib: " << data << std::endl;
     }

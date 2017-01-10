@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "loadparameters.hh"
+
 int data;
 
 typedef struct
@@ -8,7 +10,7 @@ typedef struct
     int data;
 } ExportData;
 
-int (*getValue_function)();
+Callable *getValue;
 
 extern "C" {
     typedef void (*foo_function)();
@@ -18,20 +20,22 @@ extern "C" {
         return "Test Module";
     }
 
-    void onModuleLoad(void *initialData)
+    void onModuleLoad(void *params)
     {
-        if (initialData != NULL)
+        LoadParameters *parameters = (LoadParameters *)params;
+
+        if (parameters->initialData != NULL)
         {
-            ExportData *import = (ExportData *)initialData;
+            ExportData *import = (ExportData *)parameters->initialData;
             data = import->data;
         }
         else
         {
-            data = 10;
+            data = 15;
         }
     }
 
-    void *exportModuleData()
+    void *exportModuleData(void *params)
     {
         ExportData *exportData = (ExportData*)malloc(sizeof(ExportData));
         exportData->data = data;
@@ -43,7 +47,7 @@ extern "C" {
         data = x;
     }
 
-    void foo()
+    void foo(void *params)
     {
         std::cout << "hello from lib replacement: " << data << std::endl;
     }

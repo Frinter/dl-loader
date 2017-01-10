@@ -1,7 +1,9 @@
 #pragma once
 
+#include "callable.hh"
+
 class ModuleFunctionLoader
 {
 public:
-    virtual void *loadFunction(const char *functionName) = 0;
+    virtual Callable *loadFunction(const char *functionName) = 0;
 };

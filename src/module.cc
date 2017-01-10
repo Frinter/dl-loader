@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "module.hh"
+#include "loadparameters.hh"
 
 Module::Module(ModuleInterfaceRepository *modules, SharedLibrary *library)
     : _modules(modules), _library(library)
@@ -16,15 +17,19 @@ void Module::load(void *initialData)
 {
     _library->load();
 
-    _onModuleLoad = (onModuleLoad_function)loadFunction("onModuleLoad");
-    _exportModuleData = (exportModuleData_function)loadFunction("exportModuleData");
+    _onModuleLoad = loadFunction("onModuleLoad");
+    _exportModuleData = loadFunction("exportModuleData");
 
-    _onModuleLoad(initialData, _modules);
+    LoadParameters parameters;
+    parameters.initialData = initialData;
+    parameters.modules = _modules;
+
+    _onModuleLoad->call(&parameters);
 }
 
 void *Module::getExportedData()
 {
-    return _exportModuleData();
+    return _exportModuleData->call(NULL);
 }
 
 void Module::unload()
@@ -47,7 +52,25 @@ void Module::reload(SharedLibrary *newLibrary)
     load(data);
 }
 
-void *Module::loadFunction(const char *functionName)
+typedef void *(*callable_function)(void *);
+class RegularCallable : public Callable
 {
-    return _library->loadFunction(functionName);
+public:
+    RegularCallable(callable_function function)
+        : _function(function)
+    {
+    }
+
+    void *call(void *arguments)
+    {
+        return _function(arguments);
+    }
+
+private:
+    callable_function _function;
+};
+
+Callable *Module::loadFunction(const char *functionName)
+{
+    return new RegularCallable((callable_function)_library->loadFunction(functionName));
 }
