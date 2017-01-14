@@ -10,11 +10,7 @@ typedef struct
     int data;
 } ExportData;
 
-Callable *getValue;
-
 extern "C" {
-    typedef void (*foo_function)();
-
     const char *getModuleName()
     {
         return "Test Module";

@@ -74,3 +74,14 @@ Callable *Module::loadFunction(const char *functionName)
 {
     return new RegularCallable((callable_function)_library->loadFunction(functionName));
 }
+
+void *Module::callFunction(const char *functionName)
+{
+    return callFunction(functionName, NULL);
+}
+
+void *Module::callFunction(const char *functionName, void *arguments)
+{
+    Callable *function = loadFunction(functionName);
+    return function->call(arguments);
+}

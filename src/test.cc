@@ -12,8 +12,6 @@ typedef struct
     int data;
 } ExportData;
 
-Callable *getValue;
-
 extern "C" {
     const char *getModuleName()
     {
@@ -40,8 +38,7 @@ extern "C" {
             else
             {
                 std::cout << "Success loading dependency" << std::endl;
-                getValue = dependency->loadFunction("getValue");
-                int *value = (int*)getValue->call(NULL);
+                int *value = (int*)dependency->callFunction("getValue");
                 data = *value;
                 delete value;
             }

@@ -53,18 +53,15 @@ int main(int argc, char **argv)
     Module *module = getOrOpenModule(path, &moduleRepository, &sharedLibraryRepository);
 
     ModuleFunctionLoader *moduleInterface = (ModuleFunctionLoader *)module;
-    Callable *entry = moduleInterface->loadFunction(entry_name);
-    entry->call(NULL);
+    moduleInterface->callFunction(entry_name);
 
     module->reload();
     moduleInterface = (ModuleFunctionLoader *)module;
-    entry = moduleInterface->loadFunction(entry_name);
-    entry->call(NULL);
+    moduleInterface->callFunction(entry_name);
 
     module->reload(replaceLibrary);
     sharedLibraryRepository.remove(path);
-    entry = moduleInterface->loadFunction(entry_name);
-    entry->call(NULL);
+    moduleInterface->callFunction(entry_name);
 
     return 0;
 }

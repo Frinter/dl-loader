@@ -1,5 +1,6 @@
 #pragma once
 
+#include "callable.hh"
 #include "sharedlibrary.hh"
 #include "modulefunctionloader.hh"
 #include "moduleinterfacerepository.hh"
@@ -15,9 +16,13 @@ public:
     void reload();
     void reload(SharedLibrary *newLibrary);
 
-    Callable *loadFunction(const char *functionName);
+    void *callFunction(const char *functionName);
+    void *callFunction(const char *functionName, void *arguments);
 
     void *getExportedData();
+
+private:
+    Callable *loadFunction(const char *functionName);
 
 private:
     ModuleInterfaceRepository *_modules;
