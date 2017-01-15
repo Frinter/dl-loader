@@ -2,10 +2,12 @@
 
 #include "module.hh"
 #include "loadparameters.hh"
+#include "readwritelock.hh"
 
-Module::Module(ModuleInterfaceRepository *modules, SharedLibrary *library)
-    : _modules(modules), _library(library)
+Module::Module(ModuleInterfaceRepository *modules, SharedLibrary *library, ReadWriteLock *readWriteLock)
+    : _modules(modules), _library(library), _readWriteLock(readWriteLock)
 {
+    _readWriteLock->beginWrite();
 }
 
 void Module::load()
@@ -25,6 +27,8 @@ void Module::load(void *initialData)
     parameters.modules = _modules;
 
     _onModuleLoad->call(&parameters);
+
+    _readWriteLock->endWrite();
 }
 
 void *Module::getExportedData()
@@ -34,6 +38,7 @@ void *Module::getExportedData()
 
 void Module::unload()
 {
+    _readWriteLock->beginWrite();
     _library->unload();
 }
 
@@ -82,6 +87,12 @@ void *Module::callFunction(const char *functionName)
 
 void *Module::callFunction(const char *functionName, void *arguments)
 {
+    _readWriteLock->beginRead();
+
     Callable *function = loadFunction(functionName);
-    return function->call(arguments);
+    void *result = function->call(arguments);
+
+    _readWriteLock->endRead();
+
+    return result;
 }

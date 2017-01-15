@@ -44,7 +44,7 @@ Module *getOrOpenModule(const char *name, ModuleRepository *moduleRepository, Sh
     {
         SharedLibrary *library = getOrOpenSharedLibrary(name, sharedLibraryRepository);
 
-        module = new Module((ModuleInterfaceRepository *)moduleRepository, library);
+        module = new Module((ModuleInterfaceRepository *)moduleRepository, library, new ReadWriteLock());
         module->load();
 
         moduleRepository->save(name, module);

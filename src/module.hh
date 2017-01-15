@@ -4,11 +4,12 @@
 #include "sharedlibrary.hh"
 #include "modulefunctionloader.hh"
 #include "moduleinterfacerepository.hh"
+#include "readwritelock.hh"
 
 class Module : public ModuleFunctionLoader
 {
 public:
-    Module(ModuleInterfaceRepository *modules, SharedLibrary *library);
+    Module(ModuleInterfaceRepository *modules, SharedLibrary *library, ReadWriteLock *readWriteLock);
 
     void load();
     void load(void *initialData);
@@ -30,6 +31,7 @@ private:
     SharedLibrary *_library;
     Callable *_onModuleLoad;
     Callable *_exportModuleData;
+    ReadWriteLock *_readWriteLock;
 
     Module(const Module &o) = delete;
 };
