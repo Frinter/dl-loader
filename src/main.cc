@@ -5,6 +5,7 @@
 #include "command.hh"
 #include "modulefunctionloader.hh"
 #include "modulerepository.hh"
+#include "mutex.hh"
 #include "sharedlibraryrepository.hh"
 #include "thread.hh"
 
@@ -15,8 +16,13 @@ class DummyCommand : public Command
 public:
     void execute()
     {
+        dataLock->lock();
         std::cout << "from command" << std::endl;
+        dataLock->unlock();
     }
+
+public:
+    Mutex *dataLock;
 };
 
 SharedLibrary *getOrOpenSharedLibrary(const char *name, SharedLibraryRepository *sharedLibraryRepository)
@@ -74,7 +80,13 @@ int main(int argc, char **argv)
     sharedLibraryRepository.remove(path);
     moduleInterface->callFunction(entry_name);
 
-    Thread *thread = Thread::create(new DummyCommand());
+    DummyCommand *command = new DummyCommand();
+    command->dataLock = Mutex::create();
+    command->dataLock->lock();
+    Thread *thread = Thread::create(command);
+    std::cout << "still in main" << std::endl;
+    command->dataLock->unlock();
     thread->join();
+
     return 0;
 }
