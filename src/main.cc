@@ -2,11 +2,22 @@
 #include <stdexcept>
 #include <string>
 
+#include "command.hh"
 #include "modulefunctionloader.hh"
 #include "modulerepository.hh"
 #include "sharedlibraryrepository.hh"
+#include "thread.hh"
 
 typedef int (*entry_function)();
+
+class DummyCommand : public Command
+{
+public:
+    void execute()
+    {
+        std::cout << "from command" << std::endl;
+    }
+};
 
 SharedLibrary *getOrOpenSharedLibrary(const char *name, SharedLibraryRepository *sharedLibraryRepository)
 {
@@ -63,5 +74,7 @@ int main(int argc, char **argv)
     sharedLibraryRepository.remove(path);
     moduleInterface->callFunction(entry_name);
 
+    Thread *thread = Thread::create(new DummyCommand());
+    thread->join();
     return 0;
 }
