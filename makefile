@@ -4,12 +4,16 @@ CC := gcc
 SUB_DIRS := $(shell find src -type d -print)
 OBJ_DIRS := $(foreach dir,$(SUB_DIRS),$(patsubst src%,build%,$(dir)))
 SRC := $(foreach dir,$(SUB_DIRS),$(wildcard $(dir)/*.cc))
-MAIN := src/main.cc src/module.cc src/modulerepository.cc src/sharedlibraryrepository.cc src/readwritelock.cc src/util/repository.cc src/windows/sharedlibrary.cc src/windows/thread.cc src/windows/mutex.cc
+CORE := src/module.cc src/modulerepository.cc src/sharedlibraryrepository.cc \
+	src/readwritelock.cc src/util/repository.cc src/windows/sharedlibrary.cc \
+	src/windows/thread.cc src/windows/mutex.cc
+MAIN := src/main.cc
 OBJ := $(patsubst src/%.cc,build/%.o,$(filter-out $(MAIN),$(SRC)))
+CORE_OBJ := $(patsubst src/%.cc,build/%.o,$(CORE))
 MAIN_OBJ := $(patsubst src/%.cc,build/%.o,$(MAIN))
 INCLUDE := -Isrc
 CFLAGS := $(INCLUDE)
-RELEASE_TARGET := bin/release
+RELEASE_TARGET := bin/core.a
 DEBUG_TARGET := bin/debug
 
 TEST_SUB_DIRS := $(shell find test -type d -print)
@@ -27,11 +31,11 @@ debug: $(DEBUG_TARGET)
 
 test: $(TEST_TARGET)
 
-$(DEBUG_TARGET): $(MAIN_OBJ)
+$(DEBUG_TARGET): $(MAIN_OBJ) $(RELEASE_TARGET)
 	$(CPP) -o $@ $(CFLAGS) -std=c++11 $^
 
-$(RELEASE_TARGET): $(MAIN_OBJ)
-	$(CPP) -o $@ $(CFLAGS) -std=c++11 $^
+$(RELEASE_TARGET): $(CORE_OBJ)
+	ar rvs $@ $^
 
 $(TEST_TARGET): $(TEST_OBJ)
 	$(CPP) -o $@ $(CFLAGS) -std=c++11 $^
